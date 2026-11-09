@@ -50,19 +50,25 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 	}
 	switch req.GetAction() {
 	case "on_publish", "on_play":
-		clientHeaderId := node.Generate().Int64()
-		clientHeader := &modle.StreamClientHeader{
-			ID:         clientHeaderId,
-			StreamId:   req.StreamId,
-			StreamName: req.Stream,
-			StreamUrl:  req.StreamUrl,
-			ServerId:   req.ServerId,
-			ServiceId:  req.ServiceId,
-			App:        req.App,
-			Vhost:      req.Vhost,
-		}
-		if err = repository.CreateClientHeader(ctx, clientHeader); err != nil {
+		clientHeader, err := repository.QueryClientHeaderByStreamId(ctx, req.GetStreamId())
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, err
+		}
+		if clientHeader == nil {
+			clientHeaderId := node.Generate().Int64()
+			clientHeader = &modle.StreamClientHeader{
+				ID:         clientHeaderId,
+				StreamId:   req.StreamId,
+				StreamName: req.Stream,
+				StreamUrl:  req.StreamUrl,
+				ServerId:   req.ServerId,
+				ServiceId:  req.ServiceId,
+				App:        req.App,
+				Vhost:      req.Vhost,
+			}
+			if err = repository.CreateClientHeader(ctx, clientHeader); err != nil {
+				return false, err
+			}
 		}
 		clientLineId := node.Generate().Int64()
 		clientLine := &modle.StreamClientLine{
