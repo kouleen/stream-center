@@ -7,6 +7,7 @@ import (
 	"github.com/kouleen/idl/kitex_gen/rpc"
 	"github.com/kouleen/idl/kitex_gen/stream/streamservice"
 	"github.com/kouleen/stream-center/filter"
+	_ "github.com/kouleen/stream-center/message"
 )
 
 func main() {
