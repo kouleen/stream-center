@@ -6,10 +6,11 @@ import (
 	"github.com/kouleen/common/middleware"
 	"github.com/kouleen/idl/kitex_gen/rpc"
 	"github.com/kouleen/idl/kitex_gen/stream/streamservice"
+	"github.com/kouleen/stream-center/filter"
 )
 
 func main() {
 	bootstrap.Run(rpc.STREAM_RPC_SERVER, func(option ...server.Option) server.Server {
 		return streamservice.NewServer(new(StreamServiceImpl), option...)
-	}, bootstrap.WithServerMiddleware(middleware.RpcServerMiddleware))
+	}, bootstrap.WithServerMiddleware(middleware.RpcServerMiddleware, filter.TxServerMiddleware))
 }
