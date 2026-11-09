@@ -93,3 +93,14 @@ func CreateServer(ctx context.Context, entity *modle.StreamServer) error {
 func UpdateServer(ctx context.Context, entity *modle.StreamServer) error {
 	return txctx.ExtractTx(ctx).Save(entity).Error
 }
+
+func BatchUpdateServer(ctx context.Context, entityList []*modle.StreamServer) error {
+	return mysql.GetWriteMysqlDDB().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		for _, item := range entityList {
+			if err := tx.Model(&modle.StreamServer{}).Where("id = ?", item.ID).Save(item).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}

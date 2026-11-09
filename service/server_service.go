@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/snowflake"
+	"github.com/kouleen/common/pkg/ctxutil"
 	"github.com/kouleen/idl/kitex_gen/stream"
 	"github.com/kouleen/stream-center/modle"
 	"github.com/kouleen/stream-center/repository"
@@ -124,5 +125,52 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 }
 
 func QueryServerPage(ctx context.Context, req *stream.StreamServerRequest) (resp *stream.StreamServerPageResponse, err error) {
-	return
+	list, total, err := repository.QueryServerPage(ctx, req)
+	if err != nil {
+		return
+	}
+	respList := make([]*stream.StreamServerResponse, len(list))
+	for index, item := range list {
+		respList[index] = item.ConvertResp()
+	}
+	return &stream.StreamServerPageResponse{
+		Total:   total,
+		Records: respList,
+	}, err
+}
+
+func QueryServerList(ctx context.Context, req *stream.StreamServerRequest) (resp []*stream.StreamServerResponse, err error) {
+	list, err := repository.QueryServerList(ctx, req)
+	if err != nil {
+		return
+	}
+	respList := make([]*stream.StreamServerResponse, len(list))
+	for index, item := range list {
+		respList[index] = item.ConvertResp()
+	}
+	return respList, nil
+}
+
+func QueryServer(ctx context.Context, req *stream.StreamServerRequest) (resp *stream.StreamServerResponse, err error) {
+	item, err := repository.QueryServerById(ctx, req.GetId())
+	if err != nil {
+		return
+	}
+	return item.ConvertResp(), err
+}
+
+func DeleteServer(ctx context.Context, req *stream.StreamServerRequest) (resp bool, err error) {
+	itemList, err := repository.QueryServerByIdList(ctx, req.GetIdList())
+	if err != nil || len(req.GetIdList()) != len(itemList) {
+		return false, err
+	}
+	isDelete := int8(1)
+	for _, item := range itemList {
+		item.IsDelete = &isDelete
+		item.UpdatedBy = ctxutil.GetUserId(ctx)
+	}
+	if err = repository.BatchUpdateServer(ctx, itemList); err != nil {
+		return false, err
+	}
+	return true, nil
 }

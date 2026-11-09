@@ -12,17 +12,17 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 }
 
 func QueryServerPage(ctx context.Context, req *stream.StreamServerRequest) (resp *stream.StreamServerPageResponse, err error) {
-	return
+	return service.QueryServerPage(ctx, req)
 }
 
 func QueryServerList(ctx context.Context, req *stream.StreamServerRequest) (resp []*stream.StreamServerResponse, err error) {
-	return
+	return service.QueryServerList(ctx, req)
 }
 
 func QueryServer(ctx context.Context, req *stream.StreamServerRequest) (resp *stream.StreamServerResponse, err error) {
-	return
+	return service.QueryServer(ctx, req)
 }
 
 func DeleteServer(ctx context.Context, req *stream.StreamServerRequest) (resp bool, err error) {
-	return
+	return service.DeleteServer(ctx, req)
 }
