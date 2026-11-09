@@ -109,7 +109,7 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 			return false, err
 		}
 		// 只有一个并且这一个是本次
-		if len(clientLineList) == 1 && clientLineList[0].ClientId == req.GetClientId() {
+		if len(clientLineList) == 0 || (len(clientLineList) == 1 && clientLineList[0].ClientId == req.GetClientId()) {
 			clientHeader, err := repository.QueryClientHeaderByStreamId(ctx, req.GetStreamId())
 			if err != nil {
 				return false, err
