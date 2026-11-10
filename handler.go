@@ -50,9 +50,9 @@ func (s *StreamServiceImpl) QueryStreamClientHeader(ctx context.Context, req *st
 	return handle.QueryClientHeader(ctx, req)
 }
 
-// DeleteStreamClientHeader implements the StreamServiceImpl interface.
-func (s *StreamServiceImpl) DeleteStreamClientHeader(ctx context.Context, req *stream.StreamClientHeaderRequest) (resp bool, err error) {
-	return handle.DeleteClientHeader(ctx, req)
+// StopStreamClientHeader implements the StreamServiceImpl interface.
+func (s *StreamServiceImpl) StopStreamClientHeader(ctx context.Context, req *stream.StreamClientHeaderRequest) (resp bool, err error) {
+	return handle.StopClientHeader(ctx, req)
 }
 
 // QueryStreamClientLinePage implements the StreamServiceImpl interface.
@@ -70,9 +70,9 @@ func (s *StreamServiceImpl) QueryStreamClientLine(ctx context.Context, req *stre
 	return handle.QueryClientLine(ctx, req)
 }
 
-// DeleteStreamClientLine implements the StreamServiceImpl interface.
-func (s *StreamServiceImpl) DeleteStreamClientLine(ctx context.Context, req *stream.StreamClientLineRequest) (resp bool, err error) {
-	return handle.DeleteClientLine(ctx, req)
+// StopStreamClientLine implements the StreamServiceImpl interface.
+func (s *StreamServiceImpl) StopStreamClientLine(ctx context.Context, req *stream.StreamClientLineRequest) (resp bool, err error) {
+	return handle.StopClientLine(ctx, req)
 }
 
 // QueryStreamClientLogPage implements the StreamServiceImpl interface.

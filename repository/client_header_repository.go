@@ -105,14 +105,3 @@ func CreateClientHeader(ctx context.Context, entity *modle.StreamClientHeader) e
 func UpdateClientHeader(ctx context.Context, entity *modle.StreamClientHeader) error {
 	return txctx.ExtractTx(ctx).Model(&modle.StreamClientHeader{}).Where("id = ?", entity.ID).Save(entity).Error
 }
-
-func BatchUpdateClientHeader(ctx context.Context, entityList []*modle.StreamClientHeader) error {
-	return mysql.GetWriteMysqlDDB().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		for _, entity := range entityList {
-			if err := tx.Model(&modle.StreamClientHeader{}).Where("id = ?", entity.ID).Save(entity).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}

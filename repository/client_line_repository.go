@@ -94,21 +94,18 @@ func QueryClientLineByStreamId(ctx context.Context, streamId string) (resp []*mo
 	return
 }
 
+// QueryClientLineByStreamIdList 查询是否还剩有正常在线
+func QueryClientLineByStreamIdList(ctx context.Context, streamIdList []string) (resp []*modle.StreamClientLine, err error) {
+	if err = mysql.GetReadMysqlDDB().WithContext(ctx).Model(&modle.StreamClientLine{}).Where("stream_id in (?) and status = 1", streamIdList).Find(&resp).Error; err != nil {
+		return nil, err
+	}
+	return
+}
+
 func CreateClientLine(ctx context.Context, entity *modle.StreamClientLine) error {
 	return txctx.ExtractTx(ctx).Model(&modle.StreamClientLine{}).Create(entity).Error
 }
 
 func UpdateClientLine(ctx context.Context, entity *modle.StreamClientLine) error {
 	return txctx.ExtractTx(ctx).Model(&modle.StreamClientLine{}).Where("id = ?", entity.ID).Save(entity).Error
-}
-
-func BatchUpdateClientLine(ctx context.Context, entityList []*modle.StreamClientLine) error {
-	return mysql.GetReadMysqlDDB().WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		for _, entity := range entityList {
-			if err := tx.Model(&modle.StreamClientLine{}).Where("id = ?", entity.ID).Save(entity).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
 }

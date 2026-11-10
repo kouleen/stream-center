@@ -19,6 +19,6 @@ func QueryClientHeader(ctx context.Context, req *stream.StreamClientHeaderReques
 	return service.QueryClientHeader(ctx, req)
 }
 
-func DeleteClientHeader(ctx context.Context, req *stream.StreamClientHeaderRequest) (resp bool, err error) {
-	return service.DeleteClientHeader(ctx, req)
+func StopClientHeader(ctx context.Context, req *stream.StreamClientHeaderRequest) (resp bool, err error) {
+	return service.StopClientHeader(ctx, req)
 }

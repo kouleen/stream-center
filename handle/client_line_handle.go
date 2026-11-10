@@ -19,6 +19,6 @@ func QueryClientLine(ctx context.Context, req *stream.StreamClientLineRequest) (
 	return service.QueryClientLine(ctx, req)
 }
 
-func DeleteClientLine(ctx context.Context, req *stream.StreamClientLineRequest) (resp bool, err error) {
-	return service.DeleteClientLine(ctx, req)
+func StopClientLine(ctx context.Context, req *stream.StreamClientLineRequest) (resp bool, err error) {
+	return service.StopClientLine(ctx, req)
 }
