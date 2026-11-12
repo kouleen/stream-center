@@ -25,7 +25,7 @@ func QueryClientLinePage(ctx context.Context, req *stream.StreamClientLineReques
 	if err = query.Count(&total).Error; err != nil || total == 0 {
 		return
 	}
-	query = query.Order("create_time desc,id desc")
+	query = query.Order("io_type desc,create_time desc,id desc")
 	i := (req.GetCurrent() - 1) * req.GetSize()
 	if err = query.Offset(int(i)).Limit(int(req.GetSize())).Find(&resp).Error; err != nil {
 		return
@@ -35,11 +35,14 @@ func QueryClientLinePage(ctx context.Context, req *stream.StreamClientLineReques
 
 func getClientLineQuery(ctx context.Context, req *stream.StreamClientLineRequest) *gorm.DB {
 	query := mysql.GetReadMysqlDDB().WithContext(ctx).Model(&modle.StreamClientLine{}).Where("is_delete = 0")
+	if req.GetStreamId() != "" {
+		query = query.Where("stream_id = ?", req.GetStreamId())
+	}
 	if req.GetClientId() != "" {
 		query = query.Where("client_id = ?", req.GetClientId())
 	}
-	if req.GetStreamId() != "" {
-		query = query.Where("stream_id = ?", req.GetStreamId())
+	if req.IoType != nil {
+		query = query.Where("io_type = ?", req.IoType)
 	}
 	if req.Status != nil {
 		query = query.Where("status = ?", req.Status)

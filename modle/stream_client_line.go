@@ -10,6 +10,7 @@ type StreamClientLine struct {
 	ID         int64      `json:"id,string" gorm:"column:id;primary_key;not null"`
 	ClientId   string     `json:"clientId" gorm:"column:client_id;not null"`
 	StreamId   string     `json:"streamId" gorm:"column:stream_id;not null"`
+	IoType     *int8      `json:"ioType" gorm:"column:io_type;not null;"`
 	Status     *int8      `json:"status" gorm:"column:status;default:1"`
 	Remark     string     `json:"remark" gorm:"column:remark;default:''"`
 	IsDelete   *int8      `json:"isDelete" gorm:"column:is_delete;not null;default:0"`
@@ -28,6 +29,7 @@ func (p *StreamClientLine) ConvertResp() *stream.StreamClientLineResponse {
 		Id:         p.ID,
 		ClientId:   p.ClientId,
 		StreamId:   p.StreamId,
+		IoType:     p.IoType,
 		Status:     p.Status,
 		Remark:     p.Remark,
 		IsDelete:   p.IsDelete,
@@ -35,4 +37,16 @@ func (p *StreamClientLine) ConvertResp() *stream.StreamClientLineResponse {
 		UpdatedBy:  p.UpdatedBy,
 		CreateTime: p.CreateTime.UnixMilli(),
 	}
+}
+
+var ioTypeMap = map[string]int8{
+	"on_publish": int8(1),
+	"on_play":    int8(2),
+}
+
+func (p *StreamClientLine) ToIoType(action string) *int8 {
+	if ioType, ok := ioTypeMap[action]; ok {
+		return &ioType
+	}
+	return nil
 }

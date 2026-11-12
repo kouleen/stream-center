@@ -35,6 +35,12 @@ func QueryClientHeaderPage(ctx context.Context, req *stream.StreamClientHeaderRe
 
 func getClientHeaderQuery(ctx context.Context, req *stream.StreamClientHeaderRequest) *gorm.DB {
 	query := mysql.GetReadMysqlDDB().WithContext(ctx).Model(&modle.StreamClientHeader{}).Where("is_delete = 0")
+	if req.GetServerId() != "" {
+		query = query.Where("server_id = ?", req.GetServerId())
+	}
+	if req.GetServiceId() != "" {
+		query = query.Where("service_id = ?", req.GetServiceId())
+	}
 	if req.GetStreamId() != "" {
 		query = query.Where("stream_id = ?", req.GetStreamId())
 	}
@@ -43,12 +49,6 @@ func getClientHeaderQuery(ctx context.Context, req *stream.StreamClientHeaderReq
 	}
 	if req.Status != nil {
 		query = query.Where("status = ?", req.Status)
-	}
-	if req.GetServerId() != "" {
-		query = query.Where("server_id = ?", req.GetServerId())
-	}
-	if req.GetServiceId() != "" {
-		query = query.Where("service_id = ?", req.GetServiceId())
 	}
 	if req.GetApp() != "" {
 		query = query.Where("app = ?", req.GetApp())

@@ -19,11 +19,11 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 		return
 	}
 	now := time.Now()
+	node, err := snowflake.NewNode(1)
+	if err != nil {
+		return false, err
+	}
 	if server == nil {
-		node, err := snowflake.NewNode(1)
-		if err != nil {
-			return false, err
-		}
 		serverId := node.Generate().Int64()
 		server = &modle.StreamServer{
 			ID:        serverId,
@@ -35,18 +35,24 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 		}
 	} else {
 		if req.ServiceId != server.ServiceId {
-			server.Remark = server.ServiceId + " 已下线"
-			server.ServiceId = req.ServiceId
-
+			status := int8(0)
+			server.Remark = "已生成:" + req.ServiceId
 			server.UpdateTime = &now
+			server.Status = &status
 			if err = repository.UpdateServer(ctx, server); err != nil {
 				return false, err
 			}
+			serverId := node.Generate().Int64()
+			serverNew := &modle.StreamServer{
+				ID:        serverId,
+				ServerId:  req.ServerId,
+				ServiceId: req.ServiceId,
+				Remark:    server.ServiceId + " 已下线",
+			}
+			if err = repository.CreateServer(ctx, serverNew); err != nil {
+				return false, err
+			}
 		}
-	}
-	node, err := snowflake.NewNode(1)
-	if err != nil {
-		return false, err
 	}
 	switch req.GetAction() {
 	case "on_publish", "on_play":
@@ -76,6 +82,7 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 			ClientId: req.ClientId,
 			StreamId: req.StreamId,
 		}
+		clientLine.IoType = clientLine.ToIoType(req.GetAction())
 		if err = repository.CreateClientLine(ctx, clientLine); err != nil {
 			return false, err
 		}
