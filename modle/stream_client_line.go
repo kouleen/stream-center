@@ -40,8 +40,8 @@ func (p *StreamClientLine) ConvertResp() *stream.StreamClientLineResponse {
 }
 
 var ioTypeMap = map[string]int8{
-	"on_publish": int8(1),
-	"on_play":    int8(2),
+	"on_play":    int8(1),
+	"on_publish": int8(2),
 }
 
 func (p *StreamClientLine) ToIoType(action string) *int8 {
