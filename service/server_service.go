@@ -14,7 +14,7 @@ import (
 )
 
 func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, err error) {
-	server, err := repository.QueryServerByServerId(ctx, req.ServerId)
+	serverList, err := repository.QueryServerByServerId(ctx, req.GetServerId())
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
@@ -23,9 +23,9 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 	if err != nil {
 		return false, err
 	}
-	if server == nil {
+	if len(serverList) == 0 {
 		serverId := node.Generate().Int64()
-		server = &modle.StreamServer{
+		server := &modle.StreamServer{
 			ID:        serverId,
 			ServerId:  req.ServerId,
 			ServiceId: req.ServiceId,
@@ -34,23 +34,25 @@ func SyncStream(ctx context.Context, req *stream.StreamSyncRequest) (resp bool, 
 			return false, err
 		}
 	} else {
-		if req.ServiceId != server.ServiceId {
-			status := int8(0)
-			server.Remark = "已生成:" + req.ServiceId
-			server.UpdateTime = &now
-			server.Status = &status
-			if err = repository.UpdateServer(ctx, server); err != nil {
-				return false, err
-			}
-			serverId := node.Generate().Int64()
-			serverNew := &modle.StreamServer{
-				ID:        serverId,
-				ServerId:  req.ServerId,
-				ServiceId: req.ServiceId,
-				Remark:    server.ServiceId + " 已下线",
-			}
-			if err = repository.CreateServer(ctx, serverNew); err != nil {
-				return false, err
+		for _, server := range serverList {
+			if server.ServiceId != req.ServiceId {
+				status := int8(0)
+				server.Remark = "已生成:" + req.ServiceId
+				server.UpdateTime = &now
+				server.Status = &status
+				if err = repository.UpdateServer(ctx, server); err != nil {
+					return false, err
+				}
+				serverId := node.Generate().Int64()
+				serverNew := &modle.StreamServer{
+					ID:        serverId,
+					ServerId:  req.ServerId,
+					ServiceId: req.ServiceId,
+					Remark:    server.ServiceId + " 已下线",
+				}
+				if err = repository.CreateServer(ctx, serverNew); err != nil {
+					return false, err
+				}
 			}
 		}
 	}

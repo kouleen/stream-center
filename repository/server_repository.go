@@ -65,8 +65,8 @@ func QueryServerList(ctx context.Context, req *stream.StreamServerRequest) (resp
 	return
 }
 
-func QueryServerByServerId(ctx context.Context, serverId string) (resp *modle.StreamServer, err error) {
-	if err = mysql.GetReadMysqlDDB().WithContext(ctx).Model(resp).Where("server_id = ?", serverId).Take(&resp).Error; err != nil {
+func QueryServerByServerId(ctx context.Context, serverId string) (resp []*modle.StreamServer, err error) {
+	if err = mysql.GetReadMysqlDDB().WithContext(ctx).Model(resp).Where("status = 1 and server_id = ?", serverId).Find(&resp).Error; err != nil {
 		return nil, err
 	}
 	return
