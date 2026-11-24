@@ -7,8 +7,8 @@ require (
 	github.com/bytedance/gopkg v0.1.4
 	github.com/cloudwego/kitex v0.16.3
 	github.com/google/uuid v1.6.0
-	github.com/kouleen/common v0.0.100
-	github.com/kouleen/idl v0.0.83
+	github.com/kouleen/common v0.0.106
+	github.com/kouleen/idl v0.0.87
 	gorm.io/gorm v1.31.2
 )
 
